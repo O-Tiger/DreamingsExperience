@@ -1,0 +1,28 @@
+name: DreamsPlugin
+main: com.Tiger.dreamings.DreamsPlugin
+version: 1.0
+api-version: 1.20
+author: __Tiger
+description: A simple plugin that adds dream and nightmare mechanics to Minecraft.
+
+commands:
+  setdream:
+    description: Define a posição atual como local do sonho
+    permission: dreams.set
+    usage: /setdream
+  setnightmare:
+    description: Define a posição atual como local do pesadelo
+    permission: dreams.set
+    usage: /setnightmare
+  reload:
+    description: Recarregar o plugin.
+    permission: dreams.reload
+    usage: /dreamsreload
+
+permissions:
+  dreams.set:
+    description: Permite definir os locais de sonho e pesadelo.
+    default: op
+  dreams.reload:
+    description: Permite recarregar a config do plugin.
+    default: op

@@ -1,0 +1,36 @@
+# Configurações do plugin
+lang: pt_br
+
+# Locais
+dimension:
+  enabled: true
+
+  nightmare:
+    world:
+    x:
+    y:
+    z:
+    yaw:
+    pitch:
+    chance: 60   # chance dentro da chance de sonhar
+    duration: 300
+    effects:
+      - BLINDNESS:1
+      - CONFUSION:1
+      - SLOW:1
+
+  dreams:
+    world:
+    x:
+    y:
+    z:
+    yaw:
+    pitch:
+    chance: 40
+    duration: 300
+    effects:
+      - NIGHT_VISION:1
+      - SLOW:0
+
+# Chance base de sonhar ao dormir
+dream_trigger_chance: 25
