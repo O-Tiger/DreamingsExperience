@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class DreamsManager implements Listener {
     private enum DreamType {
         DREAM, NIGHTMARE
@@ -63,7 +64,7 @@ public class DreamsManager implements Listener {
         return null;
     }
 
-    private void loadLang() {
+    public void loadLang() {
         String langCode = plugin.getConfig().getString("lang", "pt_br");
         File langFile = new File(plugin.getDataFolder(), "lang/" + langCode + ".yml");
 
@@ -74,12 +75,12 @@ public class DreamsManager implements Listener {
         lang = YamlConfiguration.loadConfiguration(langFile);
     }
 
-    private void loadLocations() {
+    public void loadLocations() {
         nightmareLocation = getLocationFromConfig("dimension.nightmare");
         dreamLocation = getLocationFromConfig("dimension.dreams");
     }
 
-    private Location getLocationFromConfig(String path) {
+    public Location getLocationFromConfig(String path) {
         FileConfiguration config = plugin.getConfig();
         String worldName = config.getString(path + ".world");
         if (worldName == null || worldName.isEmpty()) {
@@ -117,7 +118,7 @@ public class DreamsManager implements Listener {
         float posYaw = player.getLocation().getYaw();
         World posWorld = player.getLocation().getWorld();
         localPos = new Location(posWorld, posX, posY, posZ, posYaw, posPitch);
-       
+
         if (event.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK)
             return;
 
@@ -301,46 +302,53 @@ public class DreamsManager implements Listener {
                 .replace("%health%", String.valueOf((int) player.getHealth()));
     }
 
-    public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "Apenas jogadores podem usar este comando.");
-            return true;
-        }
-
-        if (!player.hasPermission("dreams.set")) {
-            player.sendMessage(ChatColor.RED + "Você não tem permissão.");
-            return true;
-        }
-        if (!player.hasPermission("dreams.reload")) {
-            player.sendMessage(ChatColor.RED + "Você não tem permissão.");
-            return true;
-        }
-
-        Location loc = player.getLocation();
-        String basePath = switch (label.toLowerCase()) {
-            case "setdream" -> "dimension.dreams";
-            case "setnightmare" -> "dimension.nightmare";
-            default -> null;
-        };
-
-        if (basePath == null)
-            return false;
-
-        FileConfiguration config = plugin.getConfig();
-        config.set(basePath + ".world", loc.getWorld().getName());
-        config.set(basePath + ".x", loc.getX());
-        config.set(basePath + ".y", loc.getY());
-        config.set(basePath + ".z", loc.getZ());
-        config.set(basePath + ".yaw", loc.getYaw());
-        config.set(basePath + ".pitch", loc.getPitch());
-        plugin.saveConfig();
-
-        loadLocations(); // recarrega
-
-        player.sendMessage(ChatColor.GREEN + "Local de " + label.replace("set", "") + " salvo!");
+ public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
+    if (!(sender instanceof Player player)) {
+        sender.sendMessage(ChatColor.RED + "Apenas jogadores podem usar este comando.");
         return true;
-
     }
+
+    if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+        if (!player.hasPermission("dreams.admin")) {
+            player.sendMessage(ChatColor.RED + "Você não tem permissão para recarregar o plugin.");
+            return true;
+        }
+
+        plugin.reloadConfig();
+        loadLang();
+        loadLocations();
+        player.sendMessage(ChatColor.GREEN + "DreamsPlugin recarregado com sucesso.");
+        return true;
+    }
+
+    if (!player.hasPermission("dreams.set")) {
+        player.sendMessage(ChatColor.RED + "Você não tem permissão para definir locais.");
+        return true;
+    }
+
+    Location loc = player.getLocation();
+    String basePath = switch (label.toLowerCase()) {
+        case "setdream" -> "dimension.dreams";
+        case "setnightmare" -> "dimension.nightmare";
+        default -> null;
+    };
+
+    if (basePath == null)
+        return false;
+
+    FileConfiguration config = plugin.getConfig();
+    config.set(basePath + ".world", loc.getWorld().getName());
+    config.set(basePath + ".x", loc.getX());
+    config.set(basePath + ".y", loc.getY());
+    config.set(basePath + ".z", loc.getZ());
+    config.set(basePath + ".yaw", loc.getYaw());
+    config.set(basePath + ".pitch", loc.getPitch());
+    plugin.saveConfig();
+
+    loadLocations(); // recarrega
+    player.sendMessage(ChatColor.GREEN + "Local de " + label.replace("set", "") + " salvo!");
+    return true;
+}
 
     // BUILDER
 

@@ -1,7 +1,5 @@
 package com.Tiger.dreamings;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,12 +12,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class DreamsPlugin extends JavaPlugin implements Listener {
 
-    private DreamsManager manager;
+    private DreamsCommand CommandManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        manager = new DreamsManager(this);
+        CommandManager = new DreamsCommand(this);
+
+        getCommand("dreams").setExecutor(new DreamsCommand(this));
+        getCommand("setdream").setExecutor(new DreamsCommand(this));
+        getCommand("setnightmare").setExecutor(new DreamsCommand(this));
+
         getLogger().info("DreamsPlugin ativado com sucesso.");
     }
 
@@ -28,13 +31,8 @@ public class DreamsPlugin extends JavaPlugin implements Listener {
         getLogger().info("DreamsPlugin desativado.");
     }
 
-    public DreamsManager getManager() {
-        return manager;
+    public DreamsCommand getManager() {
+        return CommandManager;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        return manager.handleCommand(sender, command, label, args);
-    }
-
-    }
+}

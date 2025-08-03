@@ -14,15 +14,15 @@ commands:
     description: Define a posição atual como local do pesadelo
     permission: dreams.set
     usage: /setnightmare
-  reload:
-    description: Recarregar o plugin.
-    permission: dreams.reload
-    usage: /dreamsreload
+  dreams:
+    description: Comando administrativo do DreamsPlugin.
+    usage: /<command> reload
+    permission: dreams.admin
 
 permissions:
+  dreams.admin:
+    description: Permite usar comandos administrativos
+    default: op
   dreams.set:
     description: Permite definir os locais de sonho e pesadelo.
-    default: op
-  dreams.reload:
-    description: Permite recarregar a config do plugin.
     default: op
