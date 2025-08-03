@@ -12,17 +12,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class DreamsPlugin extends JavaPlugin implements Listener {
 
-    private DreamsCommand CommandManager;
+    private DreamsManager manager;
+    private DreamsCommand commandmanager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        CommandManager = new DreamsCommand(this);
 
-        getCommand("dreams").setExecutor(new DreamsCommand(this));
-        getCommand("setdream").setExecutor(new DreamsCommand(this));
-        getCommand("setnightmare").setExecutor(new DreamsCommand(this));
+        this.manager = new DreamsManager(this);
+        this.commandmanager = new DreamsCommand(this);
 
+        getCommand("dreams").setExecutor(commandmanager);
         getLogger().info("DreamsPlugin ativado com sucesso.");
     }
 
@@ -31,8 +31,8 @@ public class DreamsPlugin extends JavaPlugin implements Listener {
         getLogger().info("DreamsPlugin desativado.");
     }
 
-    public DreamsCommand getManager() {
-        return CommandManager;
+    public DreamsManager getManager() {
+        return manager;
     }
 
 }

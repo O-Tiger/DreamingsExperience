@@ -1,8 +1,6 @@
 package com.Tiger.dreamings;
 
 import org.bukkit.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -302,55 +300,14 @@ public class DreamsManager implements Listener {
                 .replace("%health%", String.valueOf((int) player.getHealth()));
     }
 
- public boolean handleCommand(CommandSender sender, Command command, String label, String[] args) {
-    if (!(sender instanceof Player player)) {
-        sender.sendMessage(ChatColor.RED + "Apenas jogadores podem usar este comando.");
-        return true;
-    }
-
-    if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-        if (!player.hasPermission("dreams.admin")) {
-            player.sendMessage(ChatColor.RED + "Você não tem permissão para recarregar o plugin.");
-            return true;
-        }
-
-        plugin.reloadConfig();
-        loadLang();
-        loadLocations();
-        player.sendMessage(ChatColor.GREEN + "DreamsPlugin recarregado com sucesso.");
-        return true;
-    }
-
-    if (!player.hasPermission("dreams.set")) {
-        player.sendMessage(ChatColor.RED + "Você não tem permissão para definir locais.");
-        return true;
-    }
-
-    Location loc = player.getLocation();
-    String basePath = switch (label.toLowerCase()) {
-        case "setdream" -> "dimension.dreams";
-        case "setnightmare" -> "dimension.nightmare";
-        default -> null;
-    };
-
-    if (basePath == null)
-        return false;
-
-    FileConfiguration config = plugin.getConfig();
-    config.set(basePath + ".world", loc.getWorld().getName());
-    config.set(basePath + ".x", loc.getX());
-    config.set(basePath + ".y", loc.getY());
-    config.set(basePath + ".z", loc.getZ());
-    config.set(basePath + ".yaw", loc.getYaw());
-    config.set(basePath + ".pitch", loc.getPitch());
-    plugin.saveConfig();
-
-    loadLocations(); // recarrega
-    player.sendMessage(ChatColor.GREEN + "Local de " + label.replace("set", "") + " salvo!");
-    return true;
-}
-
     // BUILDER
+    public void reloadLanguage() {
+        loadLang();
+    }
+
+    public void reloadLocations() {
+        loadLocations();
+    }
 
     public DreamsManager(JavaPlugin plugin) {
         this.plugin = plugin;
