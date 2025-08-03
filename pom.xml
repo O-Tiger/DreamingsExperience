@@ -12,12 +12,11 @@
     <groupId>InsomniaEtSomniaBona</groupId>
     <artifactId>Dreamings</artifactId>
     <properties>
-        <base.version>1.0.0</base.version>
         <java.version>21</java.version>
         <paper.api.version>1.20.4-R0.1-SNAPSHOT</paper.api.version>
     </properties>
 
-    <version>${base.version}-${revision}</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>DreamsComeTrue</name>
@@ -39,6 +38,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}-${project.version}-${buildNumber}</finalName>
         <plugins>
 
             <!-- Compiler plugin -->

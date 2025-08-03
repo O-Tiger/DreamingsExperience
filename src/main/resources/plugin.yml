@@ -1,6 +1,6 @@
 name: DreamsPlugin
 main: com.Tiger.dreamings.DreamsPlugin
-version: ${project.version}
+version: 1.0.0-${buildNumber}
 api-version: 1.20
 author: __Tiger
 description: A simple plugin that adds dream and nightmare mechanics to Minecraft.
