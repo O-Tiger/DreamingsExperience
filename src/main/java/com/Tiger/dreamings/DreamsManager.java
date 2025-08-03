@@ -108,54 +108,60 @@ public class DreamsManager implements Listener {
     @EventHandler
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-
-        double posX = player.getLocation().getX();
-        double posY = player.getLocation().getY();
-        double posZ = player.getLocation().getZ();
-        float posPitch = player.getLocation().getPitch();
-        float posYaw = player.getLocation().getYaw();
-        World posWorld = player.getLocation().getWorld();
-        localPos = new Location(posWorld, posX, posY, posZ, posYaw, posPitch);
-
         if (event.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK)
             return;
 
+        // Salva posição atual
+        localPos = player.getLocation();
+
         if (!plugin.getConfig().getBoolean("dimension.enabled", true)) {
-            sendMessage(event.getPlayer(), lang.getString("messages.disabled"));
+            sendMessage(player, lang.getString("messages.disabled"));
             return;
         }
 
-        // Se já estiver "sonhando", não tenta de novo
+        // Se já estiver sonhando
         if (cameraEntities.containsKey(player.getUniqueId()))
             return;
 
-        int dreamTriggerChance = plugin.getConfig().getInt("dream_trigger_chance", 25);
-        if (random.nextInt(100) < dreamTriggerChance) {
-            int nightmareChance = plugin.getConfig().getInt("dimension.nightmare.chance", 60);
-            if (random.nextInt(100) < nightmareChance && nightmareLocation != null) {
-                triggerNightmare(player);
-            } else if (dreamLocation != null) {
-                triggerDream(player);
+        // Executa após pequeno atraso para garantir que ele esteja realmente dormindo
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Verifica se ainda é noite e o jogador ainda está dormindo
+                long time = player.getWorld().getTime();
+                boolean isNight = time >= 12541 && time <= 23458;
+                if (!player.isSleeping() || !isNight)
+                    return;
+
+                int dreamTriggerChance = plugin.getConfig().getInt("dream_trigger_chance", 25);
+                if (random.nextInt(100) < dreamTriggerChance) {
+                    int nightmareChance = plugin.getConfig().getInt("dimension.nightmare.chance", 60);
+                    if (random.nextInt(100) < nightmareChance && nightmareLocation != null) {
+                        triggerNightmare(player);
+                    } else if (dreamLocation != null) {
+                        triggerDream(player);
+                    }
+                }
             }
-        }
+        }.runTaskLater(plugin, 20L); // Espera 1 segundo (~20 ticks)
     }
 
     @EventHandler
     public void onPlayerBedLeave(PlayerBedLeaveEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+
         if (cameraEntities.containsKey(uuid)) {
-            // Previnir loop recursivo
             if (endingDream.getOrDefault(uuid, false))
                 return;
+
             endingDream.put(uuid, true);
 
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 endDreamVision(player);
                 endingDream.remove(uuid);
-            }, 5L); // Executar no tick seguinte
+            }, 5L); // Executar no próximo tick
         }
-
     }
 
     private void triggerNightmare(Player player) {
