@@ -127,19 +127,18 @@ public class DreamsManager implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                // Verifica se ainda é noite e o jogador ainda está dormindo
-                long time = player.getWorld().getTime();
-                boolean isNight = time >= 12541 && time <= 23458;
-                if (!player.isSleeping() || !isNight)
+                if (!player.isOnline())
                     return;
 
                 int dreamTriggerChance = plugin.getConfig().getInt("dream_trigger_chance", 25);
                 if (random.nextInt(100) < dreamTriggerChance) {
                     int nightmareChance = plugin.getConfig().getInt("dimension.nightmare.chance", 60);
                     if (random.nextInt(100) < nightmareChance && nightmareLocation != null) {
-                        triggerNightmare(player);
+                        if (canStartCutscene(player))
+                            triggerNightmare(player);
                     } else if (dreamLocation != null) {
-                        triggerDream(player);
+                        if (canStartCutscene(player))
+                            triggerDream(player);
                     }
                 }
             }
@@ -162,6 +161,12 @@ public class DreamsManager implements Listener {
                 endingDream.remove(uuid);
             }, 5L); // Executar no próximo tick
         }
+    }
+
+    private boolean canStartCutscene(Player player) {
+        return player.isOnline()
+                && player.getGameMode() != GameMode.SPECTATOR
+                && cameraEntities.get(player.getUniqueId()) == null;
     }
 
     private void triggerNightmare(Player player) {

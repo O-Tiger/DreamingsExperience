@@ -2,7 +2,7 @@ messages:
   disabled: "&cFunção de sonhos/pesadelos está desativada."
 
   nightmare:
-    init: "&4Você está tendo um &lpesadelo..."
+    init: "&4Você teve um &lpesadelo &resta noite..."
     middle:
       - "&6Zzz... Zzz..."
       - "&6Zzzzzt... algo se move..."
@@ -18,11 +18,11 @@ messages:
     home: "&7Voltando para casa..."
 
   dream:
-    init: "&aVocê está sonhando, &l%player%"
+    init: "&aVocê estava sonhando, &l%player%"
     end:
       - "&bVocê acorda revigorado."
       - "&bVocê desperta com uma sensação boa."
-      - "&bUm sonho bom... pena que acabou."
+      - "&bUm sonho bom... uma pena que acabou."
       
   unable: "&cNão foi possível retornar ao local original. Teleportando para o spawn do mundo."
 
