@@ -123,26 +123,23 @@ public class DreamsManager implements Listener {
         if (cameraEntities.containsKey(player.getUniqueId()))
             return;
 
-        // Executa após pequeno atraso para garantir que ele esteja realmente dormindo
+        // Executa após pequeno atraso
         new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!player.isOnline())
-                    return;
+        @Override
+        public void run() {
+            if (!canStartCutscene(player)) return;
 
-                int dreamTriggerChance = plugin.getConfig().getInt("dream_trigger_chance", 25);
-                if (random.nextInt(100) < dreamTriggerChance) {
-                    int nightmareChance = plugin.getConfig().getInt("dimension.nightmare.chance", 60);
-                    if (random.nextInt(100) < nightmareChance && nightmareLocation != null) {
-                        if (canStartCutscene(player))
-                            triggerNightmare(player);
-                    } else if (dreamLocation != null) {
-                        if (canStartCutscene(player))
-                            triggerDream(player);
-                    }
+            int dreamTriggerChance = plugin.getConfig().getInt("dream_trigger_chance", 25);
+            if (random.nextInt(100) < dreamTriggerChance) {
+                int nightmareChance = plugin.getConfig().getInt("dimension.nightmare.chance", 60);
+                if (random.nextInt(100) < nightmareChance && nightmareLocation != null) {
+                    triggerNightmareFlashback(player);
+                } else if (dreamLocation != null) {
+                    triggerDreamFlashback(player);
                 }
             }
-        }.runTaskLater(plugin, 20L); // Espera 1 segundo (~20 ticks)
+        }
+    }.runTaskLater(plugin, 20L);
     }
 
     @EventHandler
@@ -296,6 +293,70 @@ public class DreamsManager implements Listener {
         sendMessage(player, getRandomMessage(typeDream));
 
     }
+
+    private void triggerNightmareFlashback(Player player) {
+    sendMessage(player, lang.getString("messages.nightmare.flashback_init"));
+    startDreamVision(player, nightmareLocation);
+    activeDreams.put(player.getUniqueId(), DreamType.NIGHTMARE);
+
+    int duration = plugin.getConfig().getInt("dimension.nightmare.duration", 150);
+
+    // NÃO aplica efeitos pesadelo pesados (ou aplique efeitos mais leves se quiser)
+    // por exemplo, só blindness leve para atmosfera:
+    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration, 0));
+
+    new BukkitRunnable() {
+        int ticks = 0;
+
+        @Override
+        public void run() {
+            if (!cameraEntities.containsKey(player.getUniqueId())) {
+                cancel();
+                return;
+            }
+
+            ticks += 20;
+            if (ticks == 40) {
+                sendMessage(player, getRandomMessage("messages.nightmare.flashback_middle"));
+            } else if (ticks == 80) {
+                sendMessage(player, getRandomMessage("messages.nightmare.flashback_scream"));
+                cancel();
+            }
+        }
+    }.runTaskTimer(plugin, 20L, 40L);
+
+    new BukkitRunnable() {
+        @Override
+        public void run() {
+            if (cameraEntities.containsKey(player.getUniqueId())) {
+                endDreamVision(player);
+            }
+        }
+    }.runTaskLater(plugin, duration);
+}
+
+private void triggerDreamFlashback(Player player) {
+    sendMessage(player, lang.getString("messages.dream.flashback_init"));
+    startDreamVision(player, dreamLocation);
+    activeDreams.put(player.getUniqueId(), DreamType.DREAM);
+
+    int duration = plugin.getConfig().getInt("dimension.dreams.duration", 150);
+
+    // Aplica efeito leve, por exemplo night vision para visual suave
+    player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, duration, 0));
+
+    new BukkitRunnable() {
+        @Override
+        public void run() {
+            if (cameraEntities.containsKey(player.getUniqueId())) {
+                endDreamVision(player);
+            }
+        }
+    }.runTaskLater(plugin, duration);
+}
+
+
+
 
     private void sendMessage(Player player, String rawMessage) {
         if (rawMessage == null)

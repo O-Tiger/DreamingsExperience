@@ -16,6 +16,9 @@ messages:
       - "&6O terror acabou... por agora."
       - "&6Você desperta com um pulo."
     home: "&7Voltando para casa..."
+    flashback_init: "&cVocê é assombrado por um flashback perturbador..."
+    flashback_middle: "&cO medo volta à sua mente..."
+    flashback_scream: "&4Um grito ecoa dentro da sua cabeça!"
 
   dream:
     init: "&aVocê estava sonhando, &l%player%"
@@ -23,7 +26,9 @@ messages:
       - "&bVocê acorda revigorado."
       - "&bVocê desperta com uma sensação boa."
       - "&bUm sonho bom... uma pena que acabou."
+    flashback_init: "&bVocê revive um sonho tranquilo..."
       
   unable: "&cNão foi possível retornar ao local original. Teleportando para o spawn do mundo."
 
   awake: "&aVocê acorda."
+  cannot_start: "&cVocê não consegue ter um sonho ou pesadelo agora."
